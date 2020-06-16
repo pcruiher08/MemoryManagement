@@ -1,15 +1,24 @@
 import threading 
 import os
 
+"""
+Proyecto Final Sistemas Operativos - puntos extras
+Pablo César Ruíz Hernández A01197044
+Uriel Fuentes A00820592
+Humberto Tello A01196965
+Alexis Ruiz Bernadac A00819813
+"""
+
 contadorConSemaforo = 0
 contadorSinSemaforo = 0
-incrementos = 100000
+print("se nota mas el cambio en el conteo de los semaforos cuando el incremento es mas grande, ej 100,000, pero si se prueba con 10,000 procesos, se tarda aproximadamente 5 minutos en correr")
+incrementos = int(input("De cuanto quiere que sean los incrementos de los procesos? "))
+
 def aumenta(identificador):
     global contadorConSemaforo, contadorSinSemaforo
     '''
     identificador = 0 : con semaforo
     identificador = 1 : sin semaforo
-
     '''
     if(identificador == 0):
         contadorConSemaforo += 1
@@ -21,8 +30,6 @@ def adderConSemaforo(semaforo):
     semaforo.acquire()
     for i in range (incrementos):
         aumenta(0)
-    #print("Cuenta: {}".format(contadorConSemaforo))
-    #print("Proceso que se esta ejecutando: {}".format(os.getpid())) 
     semaforo.release()
 
 def adderSinSemaforo():
@@ -36,10 +43,9 @@ threadsSinSemaforo = []
 
 #solo se va a usar un semaforo, se detiene siempre que se entre a un proceso y se activa de nuevo antes de salir
 semaforo = threading.Semaphore() 
-
-#en vez de 5 probar con los 10,000 que se nos piden, pero si se piden loggear se tarda como 4 segundos en imprimir todo
-print("Ejecutando 10000 procesos con semaforos")
-for i in range(10000):
+numeroDeProcesos = int(input('Cuantos procesos desea ejecutar en paralelo? '))
+print("Ejecutando", numeroDeProcesos ,"procesos con semaforos")
+for i in range(numeroDeProcesos):
     threadsConSemaforo.append(threading.Thread(target=adderConSemaforo, args=(semaforo,)))
 
 #se inician los threads
@@ -50,13 +56,10 @@ for thread in threadsConSemaforo:
 for thread in threadsConSemaforo: 
     thread.join()
 
-
 print("Contador con semaforos:", contadorConSemaforo, "con incrementos de:", incrementos)
-print("Ejecutando 10000 procesos sin semaforos")
+print("Ejecutando", numeroDeProcesos ,"procesos con semaforos")
 
-
-#en vez de 5 probar con los 10,000 que se nos piden, pero si se piden loggear se tarda como 4 segundos en imprimir todo
-for i in range(10000):
+for i in range(numeroDeProcesos):
     threadsSinSemaforo.append(threading.Thread(target=adderSinSemaforo))
 
 #se inician los threads
